@@ -1,0 +1,53 @@
+# almost copy of https://docs.github.com/en/actions/publishing-packages/publishing-docker-images#publishing-images-to-github-packages
+
+name: Buid
+
+name: Create and publish a Docker image
+
+on:
+  push:
+    branches: ['build-and-push-simple']
+
+env:
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # https://github.com/marketplace/actions/docker-login
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata (tags, labels) for Docker
+      # https://github.com/docker/metadata-action
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+  
+
+      # Build and push Docker image with Buildx 
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

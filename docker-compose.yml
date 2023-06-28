@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+
+  build-speed-test:
+    build: 
+      context: .
+      dockerfile: Dockerfile
