@@ -12,4 +12,6 @@ RUN pip install --no-cache-dir -r requirements/requirements.txt
 RUN set -x && \
     rm -rf /var/lib/apt/lists/*
 
+COPY ./src /app
+
 WORKDIR /app
